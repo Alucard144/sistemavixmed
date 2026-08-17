@@ -22,8 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Recupera os dados do usuário encontrado
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Se o usuário existir no banco e a senha bater
-        if ($usuario && $senha_digitada === $usuario['senha']) {
+        // Se o usuário existir no banco e a senha bater (hash ou texto plano)
+        if ($usuario && (password_verify($senha_digitada, $usuario['senha']) || $senha_digitada === $usuario['senha'])) {
             // Salva os dados na sessão
             $_SESSION['logado'] = true;
             $_SESSION['usuario_id'] = $usuario['id'];

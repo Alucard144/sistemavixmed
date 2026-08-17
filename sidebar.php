@@ -172,10 +172,27 @@ $iniciais = mb_strtoupper(mb_substr($nome, 0, 2));
 
 @media (max-width: 768px) {
     .chamados-topbar { padding: 10px 12px !important; }
-    .chamados-topbar-inner { flex-wrap: wrap !important; gap: 8px !important; padding: 10px !important; }
-    .chamados-nav { width: 100% !important; justify-content: center !important; flex-wrap: wrap !important; }
-    .chamados-nav li a { padding: 8px 10px !important; font-size: 12px !important; }
-    .chamados-user-name { display: none !important; }
+    .chamados-topbar-inner { 
+        flex-direction: column !important; 
+        gap: 10px !important; 
+        padding: 12px !important; 
+        align-items: center !important; 
+    }
+    .chamados-nav { 
+        width: 100% !important; 
+        justify-content: center !important; 
+        flex-wrap: wrap !important; 
+        gap: 8px !important;
+    }
+    .chamados-nav li a { padding: 8px 12px !important; font-size: 12px !important; }
+    .chamados-user {
+        width: 100% !important;
+        justify-content: center !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        padding-top: 10px !important;
+        margin-top: 5px !important;
+    }
+    .chamados-user-name { display: inline-block !important; }
     .main-content { padding: 12px !important; }
 }
 </style>

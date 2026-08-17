@@ -22,8 +22,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Recupera os dados do usuário encontrado
         $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Se o usuário existir no banco e a senha bater
-        if ($usuario && $senha_digitada === $usuario['senha']) {
+        // Se o usuário existir no banco e a senha bater (hash ou texto plano)
+        if ($usuario && (password_verify($senha_digitada, $usuario['senha']) || $senha_digitada === $usuario['senha'])) {
             
             // Salva os dados na sessão
             $_SESSION['logado'] = true;
@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .pages {
             display: flex;
-            width: 200vw;
+            width: 300vw;
             height: 100%;
             transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -317,7 +317,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </form>
 
                     <div class="page-note">
-                        Role o scroll do mouse para ir para a página do ponto.
+                        Arraste para o lado ou role o scroll para ir para a página do ponto.
                     </div>
                 </div>
             </section>
@@ -356,13 +356,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
             </section>
 
+            <!-- PÁGINA 3: Vixmed CRM -->
+            <section class="page" data-page="2" style="background: linear-gradient(135deg, var(--azul-escuro) 0%, #0d2137 50%, #0b132b 100%);">
+                <div class="page-content" style="border-color: rgba(0, 230, 118, 0.12); background: rgba(28, 37, 65, 0.45);">
+                    <div class="page-logo" style="width: auto; height: auto; font-size: 32px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px;">
+                        💼 Vix<span>med</span> CRM
+                    </div>
+                    <div class="page-hero">
+                        <h1>Vix<span>med</span> CRM</h1>
+                        <p>Acesse o painel integrado de clientes, reuniões e calendário.</p>
+                    </div>
+
+                    <a href="crm/index.php" class="btn-login" style="background: #00e676; color: #0b132b; text-decoration: none; display: block; line-height: 48px; height: 48px; padding: 0; box-shadow: 0 4px 12px rgba(0, 230, 118, 0.35);">
+                        Acessar o CRM
+                    </a>
+
+                    <div class="page-note" style="background: rgba(0, 230, 118, 0.08); border-color: rgba(0, 230, 118, 0.15);">
+                        Arraste para a esquerda ou role o scroll para voltar.
+                    </div>
+                </div>
+            </section>
+
         </div>
 
         <!-- BOLINHAS INDICADORAS -->
         <div class="indicator">
             <span class="dot active" data-target="0"></span>
             <span class="dot" data-target="1"></span>
-            <span class="dot-label">Role o scroll para trocar</span>
+            <span class="dot" data-target="2"></span>
+            <span class="dot-label">Arraste ou role para trocar</span>
         </div>
     </div>
 
@@ -373,18 +395,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         let isScrolling = false;
 
         function setPage(index) {
-            currentPage = Math.max(0, Math.min(index, 1));
+            currentPage = Math.max(0, Math.min(index, 2));
             pages.style.transform = `translateX(-${currentPage * 100}vw)`;
             dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentPage));
         }
 
         function handleWheel(event) {
             if (isScrolling) return;
-            if (event.deltaY > 0 && currentPage === 0) {
-                setPage(1);
+            if (event.deltaY > 0 && currentPage < 2) {
+                setPage(currentPage + 1);
                 blockScroll();
-            } else if (event.deltaY < 0 && currentPage === 1) {
-                setPage(0);
+            } else if (event.deltaY < 0 && currentPage > 0) {
+                setPage(currentPage - 1);
                 blockScroll();
             }
         }
@@ -396,6 +418,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         dots.forEach(dot => dot.addEventListener('click', () => setPage(Number(dot.dataset.target))));
         window.addEventListener('wheel', handleWheel, { passive: false });
+
+        // Touch gestures for mobile swipe
+        let touchstartX = 0;
+        let touchendX = 0;
+        
+        function handleGesture() {
+            if (touchendX < touchstartX - 50 && currentPage < 2) {
+                setPage(currentPage + 1);
+            }
+            if (touchendX > touchstartX + 50 && currentPage > 0) {
+                setPage(currentPage - 1);
+            }
+        }
+        
+        window.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        window.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            handleGesture();
+        }, { passive: true });
 
         setPage(<?= (!empty($mensagem_erro) && isset($_POST['login_tipo_ponto'])) ? 1 : 0 ?>);
     </script>
